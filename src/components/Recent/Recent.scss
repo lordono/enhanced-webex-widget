@@ -1,0 +1,212 @@
+@import "../../variables.scss";
+
+.App-recent {
+  height: calc(65vh - 40px);
+  width: 370px;
+  padding: 40px 0 0 25px;
+  border-top-left-radius: $border-radius;
+  border-bottom-left-radius: $border-radius;
+  background-color: $primary-color;
+  .recent-sort {
+    color: lighten($placeholder-color, 15%);
+    font-weight: 600;
+    font-size: 12.5px;
+    margin: 0 0 10px 20px;
+    width: calc(100% - 200px);
+    text-align: left;
+  }
+  .recent-header {
+    height: 50px;
+    padding-left: 20px;
+    display: flex;
+    .recent-search {
+      border: none;
+      border-radius: $narrow-radius;
+      height: 30px;
+      background-color: $secondary-color;
+      color: $text-color;
+      width: calc(100% - 120px);
+      margin-right: 10px;
+      padding: 2.5px 15px;
+      outline: none;
+      &::-webkit-input-placeholder {
+        font-weight: bold;
+      }
+      &::-moz-placeholder {
+        font-weight: bold;
+      }
+      &:-ms-input-placeholder {
+        font-weight: bold;
+      }
+    }
+    .recent-add {
+      height: 35px;
+      width: 35px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      border-radius: $narrow-radius;
+      background-color: $secondary-color;
+      color: $text-color;
+      cursor: pointer;
+      transition: all 0.2s;
+      &:hover {
+        background-color: lighten($secondary-color, 5%);
+      }
+    }
+  }
+
+  .recent-content {
+    height: calc(100% - 87.5px);
+    width: calc(100% - 25px);
+    padding-right: 25px;
+    padding-bottom: 10px;
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+
+    /* width */
+    &::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: #333;
+    }
+
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    // search-list
+    .recent-search-ul {
+      color: $text-color;
+      .recent-search-li {
+        margin: 5px 0;
+        padding: 10px 15px;
+        display: flex;
+        justify-content: space-between;
+        border-radius: 5px;
+        background-color: $secondary-color;
+        cursor: pointer;
+        transition: all 0.2s;
+        &:hover {
+          background-color: lighten($secondary-color, 5%);
+        }
+        .recent-search-main {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 10px;
+          .recent-search-title {
+            margin-bottom: 5px;
+            font-size: 13px;
+          }
+          .recent-search-desc {
+            font-weight: 300;
+            font-size: 11px;
+          }
+        }
+        .recent-search-type {
+          font-size: 11px;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .App-recent-row {
+      height: 75px;
+      width: calc(100% - 20px);
+      padding: 7.5px 0 7.5px 20px;
+      display: flex;
+      justify-content: flex-start;
+      border-radius: 10px;
+      margin: 5px 0;
+      align-items: center;
+      scroll-snap-align: start;
+      background-color: $primary-color;
+      cursor: pointer;
+
+      &.unread {
+        .chat-row-info {
+          color: $text-color;
+          .chat-row-main {
+            .chat-row-title {
+              font-weight: 400;
+            }
+          }
+          .chat-row-description {
+            color: darken($text-color, 15%);
+          }
+        }
+      }
+
+      &:hover {
+        background-color: $secondary-color;
+      }
+
+      &.selected {
+        background-color: $secondary-color;
+      }
+
+      .avatar {
+        vertical-align: middle;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-color: lighten($primary-color, 7.5%);
+        color: $text-color;
+        line-height: 43.5px;
+        text-transform: capitalize;
+        text-align: center;
+        font-weight: 100;
+        margin: 0 10px 0 0;
+      }
+      .chat-row-info {
+        width: calc(100% - 90px);
+        height: calc(100% - 30px);
+
+        color: $placeholder-color;
+        .chat-row-main {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          font-size: 14px;
+
+          .chat-row-title {
+            width: calc(100% - 7rem);
+            white-space: nowrap;
+            overflow: hidden;
+            font-weight: 600;
+            text-align: left;
+            text-overflow: ellipsis;
+            &.light {
+              font-weight: 400;
+              color: $placeholder-color;
+            }
+          }
+          .chat-row-date {
+            font-size: 0.65rem;
+          }
+        }
+        .chat-row-description {
+          width: calc(100% - 1rem);
+          margin-top: 5px;
+          font-size: 0.8rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-align: left;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+.separator {
+  display: flex;
+  overflow: hidden;
+  font-size: 10.5px;
+  color: #929394;
+  white-space: nowrap;
+  justify-content: center;
+  align-items: center;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #929394;
+  }
+  &::before {
+    margin-right: 1em;
+    margin-left: 2em;
+  }
+  &::after {
+    margin-left: 1em;
+    margin-right: 2em;
+  }
+
+  .separator-text {
+    position: relative;
+    display: inline-block;
+    font-weight: 200;
+    line-height: 1.25em;
+    letter-spacing: 0.015em;
+    color: #929394;
+  }
+
+  &.informative {
+    text-transform: uppercase;
+    &::before,
+    &::after {
+      border-bottom: 1px solid darken(#049fd9, 2.5%);
+    }
+    .separator-text {
+      color: darken(#049fd9, 2.5%);
+    }
+  }
+}

@@ -1,0 +1,135 @@
+@import "../../../variables.scss";
+
+.space-form {
+  background-color: lighten($primary-color, 1.5%);
+  height: calc(100% - 60px);
+  width: 100%;
+  max-height: 100%;
+  align-self: stretch;
+  // height: calc(100% - 120px);
+  padding: 20px 0 40px;
+  overflow-y: auto;
+
+  display: flex;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .space-input-group {
+    padding: 10px 0;
+    .space-input-label {
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    .space-input {
+      border: none;
+      border-radius: $narrow-radius;
+      height: 30px;
+      background-color: $secondary-color;
+      color: $text-color;
+      width: calc(100% - 30px);
+      margin-right: 10px;
+      padding: 2.5px 15px;
+      outline: none;
+      &::-webkit-input-placeholder {
+        font-weight: bold;
+      }
+      &::-moz-placeholder {
+        font-weight: bold;
+      }
+      &:-ms-input-placeholder {
+        font-weight: bold;
+      }
+    }
+  }
+
+  .space-input-button {
+    height: 35px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: $narrow-radius;
+    background-color: $secondary-color;
+    color: $text-color;
+    cursor: pointer;
+    transition: all 0.2s;
+    &:hover {
+      background-color: lighten($secondary-color, 5%);
+    }
+  }
+
+  // search-list
+  .space-input-list {
+    color: $text-color;
+    .space-input-li {
+      margin: 5px 0;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 5px;
+      background-color: $secondary-color;
+      transition: all 0.2s;
+      &:hover {
+        background-color: lighten($secondary-color, 5%);
+      }
+      .space-input-button {
+        background-color: lighten($primary-color, 5%);
+        width: 65px;
+        &:hover {
+          background-color: lighten($primary-color, 7.5%);
+        }
+      }
+      .space-input-main {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 10px;
+        .space-input-title {
+          margin-bottom: 5px;
+          font-size: 13px;
+        }
+        .space-input-desc {
+          font-weight: 300;
+          font-size: 11px;
+        }
+      }
+    }
+  }
+
+  .space-main {
+    width: calc(55% - 40px);
+    height: calc(100% - 20px);
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 5px solid $secondary-color;
+  }
+
+  .space-search {
+    width: calc(45% - 40px);
+    height: calc(100% - 20px);
+    padding: 10px 20px;
+  }
+}
