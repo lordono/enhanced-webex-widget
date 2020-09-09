@@ -11,6 +11,15 @@ import {
 const TAG_ONE_ON_ONE = "ONE_ON_ONE";
 const TAG_HIDDEN = "HIDDEN";
 
+const widgetMessage = {
+  scrolledBottom: false,
+  windowHeight: 0,
+  loadHistory: false,
+  scrollTop: 0,
+  initial: true,
+  activitiesLength: 0
+};
+
 export const TAG_LOCKED = "LOCKED";
 
 export function constructLastestActivity(items) {
@@ -122,8 +131,12 @@ export function constructSpace(space, currentUserId) {
     lastAcknowledgedActivityId,
     lastAcknowledgedCardActionActivity: null,
     isDecrypting: space.isDecrypting,
+    defaultActivityEncryptionKeyUrl: space.defaultActivityEncryptionKeyUrl,
+    encryptionKeyUrl: space.encryptionKeyUrl,
+    kmsResourceObjectUrl: space.kmsResourceObjectUrl,
     isModerator,
     isOneOnOne,
+    widgetMessage,
     isHidden: space.tags.includes(TAG_HIDDEN),
     isLocked: space.tags.includes(TAG_LOCKED),
     isMentionNotificationsOn:

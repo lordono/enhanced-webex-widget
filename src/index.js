@@ -6,15 +6,20 @@ import { Provider } from "react-redux";
 import * as serviceWorker from "./serviceWorker";
 import StoreProvider from "./features/webex/webexStore";
 import FilesProvider from "./features/files/filesStore";
+import ComposeProvider from "./features/compose/composeStore";
+// import { MessageComposer } from "./components/Space/Message/Composer/MessageComposer";
 
 const initWidget = ({ token, onEvent }, DOMNode) => {
   ReactDOM.render(
     <React.StrictMode>
       <StoreProvider>
         <FilesProvider>
-          <Provider store={store}>
-            <App token={token} onEvent={onEvent} />
-          </Provider>
+          <ComposeProvider>
+            <Provider store={store}>
+              <App token={token} onEvent={onEvent} />
+              {/* <MessageComposer /> */}
+            </Provider>
+          </ComposeProvider>
         </FilesProvider>
       </StoreProvider>
     </React.StrictMode>,

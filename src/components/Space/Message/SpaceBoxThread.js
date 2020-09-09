@@ -1,11 +1,12 @@
 import React from "react";
-// import DOMPurify from "dompurify";
-import ReactHtmlParser from "react-html-parser";
 import { useSelector } from "react-redux";
-import { selectReactionById } from "../../features/reactions/reactionsSlice";
-import { formatActivity } from "../../features/activities/helpers";
-import { formatMsgTime } from "../formatDates";
+
+import { selectReactionById } from "../../../features/reactions/reactionsSlice";
+import { formatActivity } from "../../../features/activities/helpers";
+import { formatMsgTime } from "../../formatDates";
+
 import { ReactionRow } from "./Reaction/ReactionRow";
+import { SpaceContent } from "./SpaceContent";
 
 const Thread = ({ id, currentUser }) => {
   const activity = useSelector(s => s.activities.entities[id]);
@@ -32,9 +33,7 @@ const Thread = ({ id, currentUser }) => {
           </div>
         </div>
         <div className="msg-row-content">
-          {formattedActivity.object.content
-            ? ReactHtmlParser(formattedActivity.object.content)
-            : "--File-Upload--"}
+          <SpaceContent activity={formattedActivity} />
           <ReactionRow reactions={reactions} />
         </div>
       </div>

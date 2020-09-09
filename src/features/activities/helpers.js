@@ -1,7 +1,4 @@
-import {
-  API_ACTIVITY_TYPE,
-  API_ACTIVITY_VERB
-} from "@webex/react-component-utils";
+import { API_ACTIVITY_VERB } from "@webex/react-component-utils";
 import { filterSync } from "@webex/helper-html";
 
 import defaultFormatters from "./formatters";
@@ -75,8 +72,20 @@ export function normalizeActivity(a) {
         files: activity.object.files.items.map(item => {
           const returnItem = {};
           for (let i of Object.keys(item)) {
-            if (i !== "image" && i !== "scr") {
+            if (
+              [
+                "objectType",
+                "url",
+                "displayName",
+                "fileSize",
+                "mimeType",
+                "encryptionKeyUrl"
+              ].includes(i)
+            ) {
               returnItem[i] = item[i];
+            } else if (i === "image") {
+              returnItem.width = item.image.width;
+              returnItem.height = item.image.height;
             }
           }
           return returnItem;
@@ -107,7 +116,6 @@ export function filterActivities(activities) {
   return activities.filter(a => {
     const isUpdate = a.verb === API_ACTIVITY_VERB.UPDATE;
     const isContent = a.object && a.object.objectType === "content";
-    const isReply = a.type === API_ACTIVITY_TYPE.REPLY;
     let shouldInclude = true;
 
     // Content updates show up out of order and should not be displayed
@@ -115,15 +123,11 @@ export function filterActivities(activities) {
       shouldInclude = false;
     }
 
-    // Threaded replies are not currently supported
-    if (isReply) {
-      shouldInclude = false;
-    }
-
     return shouldInclude;
   });
 }
 
+// not handling locus properly...
 export const VISIBLE_ACTIVITY_VERBS = {
   tombstone: {},
   share: {
@@ -135,9 +139,9 @@ export const VISIBLE_ACTIVITY_VERBS = {
   create: {
     objectTypes: ["conversation"]
   },
-  update: {
-    objectTypes: ["locusSessionSummaryParticipant", "locusSessionSummary"]
-  },
+  // update: {
+  //   objectTypes: ["locusSessionSummaryParticipant", "locusSessionSummary"]
+  // },
   add: {
     objectTypes: ["person"]
   },
@@ -173,7 +177,7 @@ export function isActivityVisible(activity) {
   if (
     !Object.prototype.hasOwnProperty.call(VISIBLE_ACTIVITY_VERBS, activity.type)
   ) {
-    console.log("activity has wrong verbs", activity);
+    // console.log("activity has wrong verbs", activity);
     return false;
   }
 

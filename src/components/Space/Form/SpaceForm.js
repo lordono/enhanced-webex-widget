@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { StoreContext } from "../../../features/webex/webexStore";
 import { FilesContext } from "../../../features/files/filesStore";
-import { useDebouncedSearch } from "../../Recent/useDebouncedSearch";
+import { useDebouncedSearch } from "../../useDebouncedSearch";
 
 import {
   localSearch,

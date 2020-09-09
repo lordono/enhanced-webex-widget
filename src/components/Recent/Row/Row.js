@@ -46,6 +46,13 @@ const getShortDesc = (activity, users) => {
         return `${activity.object.displayName} left`;
       }
     }
+  } else if (
+    activity.object &&
+    activity.object.contentCategory === "documents"
+  ) {
+    return `${name} shared a file`;
+  } else if (activity.object && activity.object.contentCategory === "images") {
+    return `${name} shared an image`;
   }
   return "";
 };
@@ -62,6 +69,7 @@ export const RecentRow = props => {
   const lastActivity = useSelector(
     state => state.activities.entities[space.latestActivity]
   );
+
   if (space.isFetching) {
     return null;
   } else {

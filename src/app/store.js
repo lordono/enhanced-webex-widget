@@ -12,6 +12,7 @@ import widgetMessageReducer from "../features/widgetMessage/widgetMessageSlice";
 import indicatorsReducer from "../features/indicators/indicatorsSlice";
 import reactionsReducer from "../features/reactions/reactionsSlice";
 import threadsReducer from "../features/threads/threadsSlice";
+import composeReducer from "../features/compose/composeSlice";
 
 export default configureStore({
   middleware: getDefaultMiddleware({
@@ -37,6 +38,7 @@ export default configureStore({
     spaces: spacesReducer,
     users: usersReducer,
     features: featuresReducer,
-    webex: webexReducer
+    webex: webexReducer,
+    compose: composeReducer
   }
 });

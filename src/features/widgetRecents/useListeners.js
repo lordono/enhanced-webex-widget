@@ -8,7 +8,11 @@ import {
 
 import { StoreContext } from "../webex/webexStore";
 import { updateStatus as updateWidgetStatus } from "./widgetRecentsSlice";
-import { storeActivities, updateActivity } from "../activities/activitiesSlice";
+import {
+  storeActivities,
+  updateActivity,
+  removeOne as removeActivity
+} from "../activities/activitiesSlice";
 import {
   addSpaceTags,
   fetchSpace,
@@ -73,7 +77,12 @@ const processActivity = (
       const otherUser = users.entities[otherParticipantId];
 
       // Update space with newest post activity
-      dispatch(updateSpaceWithActivity(activity, isSelf, true));
+      dispatch(updateSpaceWithActivity(activity, isSelf, true)).then(() => {
+        // remove temp message if there is.
+        if (isSelf && activity.clientTempId) {
+          dispatch(removeActivity({ id: activity.clientTempId }));
+        }
+      });
 
       // Store files
       saveFileFromActivities(webex, filesStore, activity);
@@ -196,8 +205,6 @@ const handleNewActivity = (activity, webexInstance, filesStore, onEvent) => (
     spaceId = activity.object.id;
   }
 
-  console.log(spaceId, activity);
-
   const cachedSpace = spaces.entities[spaceId];
 
   if (cachedSpace) {
@@ -222,7 +229,7 @@ const handleNewActivity = (activity, webexInstance, filesStore, onEvent) => (
 
         // Store user for 1:1 spaces
         if (newSpace.type === SPACE_TYPE_ONE_ON_ONE) {
-          const toUser = getToParticipant(newSpace, users.get("currentUserId"));
+          const toUser = getToParticipant(newSpace, users.currentUserId);
 
           if (toUser) {
             dispatch(storeUser(toUser));

@@ -6,27 +6,13 @@ import { add as addError } from "../errors/errorsSlice";
 import { storeActivities } from "../activities/activitiesSlice";
 import { storeUsers } from "../users/usersSlice";
 
-import {
-  TAG_LOCKED,
-  decryptSpace,
-  constructSpace,
-  constructSpaces
-} from "./helpers";
+import { TAG_LOCKED, constructSpace, constructSpaces } from "./helpers";
 import { saveFileFromActivities } from "../files/filesStore";
+import { filterActivities } from "../activities/helpers";
+import { addCompose } from "../compose/composeSlice";
 
 // number of activities to pull for initialization
 const activitiesLimit = 40;
-
-// The options to pass to convo service when fetching multiple spaces (for recents)
-const spacesConversationOptions = {
-  uuidEntryFormat: true,
-  personRefresh: true,
-  isActive: true,
-  lastViewableActivityOnly: false,
-  participantAckFilter: "all",
-  participantsLimit: -1,
-  activitiesLimit: 0
-};
 
 const paginateOptions = {
   conversationsLimit: 50,
@@ -147,14 +133,32 @@ export const storeSpaces = (spaces, options = {}) => (dispatch, getState) => {
   return Promise.resolve(addList.concat(updateList));
 };
 
+/**
+ * Prior to fetching space, create this to initialize space in entities
+ * @param {string} id spaceId
+ */
 export const storeInitialSpace = id => dispatch => {
   dispatch(addInitial({ id }));
 };
 
+/**
+ * Update space with last seen date by current user
+ * @param {string} spaceId
+ * @param {string} lastSeenDate last seen date
+ */
 export const updateSpaceRead = (spaceId, lastSeenDate) => dispatch => {
   dispatch(updateSpaceReadEvent({ lastSeenDate, spaceId }));
 };
 
+/**
+ * Function will update space with appropriate participants depending on action
+ * If action is "add", it will add the actorId into the space.participants
+ * If action is "leave", it'll remove the actorId in the space.participants
+ *
+ * @param {string} spaceId
+ * @param {action} action this should be either "add" or "leave"
+ * @param {string} actorId
+ */
 export const updateSpacewithParticipants = (spaceId, action, actorId) => (
   dispatch,
   getState
@@ -237,6 +241,16 @@ export const updateSpaceWithActivity = (
 
   if (isSelf) {
     space.lastSeenActivityDate = activity.published;
+
+    // handle to remove temp message
+    if (activity.clientTempId) {
+      const index = space.activities.findIndex(
+        i => i === activity.clientTempId
+      );
+      if (index >= 0) {
+        space.activities.splice(index, 1);
+      }
+    }
   }
 
   if (isReadable) {
@@ -244,6 +258,8 @@ export const updateSpaceWithActivity = (
   }
 
   dispatch(updateSpace(space));
+
+  return Promise.resolve(space);
 };
 
 /**
@@ -271,8 +287,13 @@ export const fetchSpace = (webexInstance, filesStore, space) => (
       latestActivity: true
     })
     .then(fullSpace => {
+      // initialize compose
+      dispatch(addCompose(fullSpace.id));
+
       // store users
       dispatch(storeUsers(fullSpace.participants.items));
+
+      fullSpace.activities.items = filterActivities(fullSpace.activities.items);
 
       // store images
       fullSpace.activities.items.forEach(item =>
@@ -299,63 +320,10 @@ export const fetchSpace = (webexInstance, filesStore, space) => (
 };
 
 /**
- * Fetches spaces encrypted, stores encrypted spaces, then decrypts them.
- * This provides a better first time UX due to the fact that users can
- * see the decryption progress of each space.
- *
- * @export
- * @param {object} webexInstance
- * @param {object} [options={}]
- * @returns {function} thunk
+ * Recursive callback to webex to get all spaces with last activity
+ * @param {webex} webexInstance
+ * @param {object} options
  */
-export const fetchSpacesEncrypted = (webexInstance, options = {}) => (
-  dispatch,
-  getState
-) => {
-  const currentUserId = getState().users.currentUserId;
-  const listOptions = Object.assign(
-    { deferDecrypt: true },
-    spacesConversationOptions,
-    options
-  );
-
-  return webexInstance.internal.conversation
-    .list(listOptions)
-    .then(items => {
-      const spaces = items.map(space => {
-        const decryptPromise = decryptSpace(space).then(decryptedSpace => {
-          if (decryptedSpace) {
-            const s = Object.assign({}, decryptedSpace, {
-              isDecrypting: false
-            });
-
-            dispatch(storeSpaces([s]));
-
-            return Promise.resolve(constructSpace(s, currentUserId));
-          }
-
-          return Promise.resolve(
-            new Error("Space was not decrypted correctly")
-          );
-        });
-
-        return Object.assign({}, space, {
-          isDecrypting: true,
-          decryptPromise
-        });
-      });
-
-      dispatch(storeSpaces(spaces));
-
-      return Promise.resolve(spaces);
-    })
-    .catch(err => {
-      addLoadError(dispatch, err.name);
-
-      throw err;
-    });
-};
-
 const fetchSpacesPaginateCall = (webexInstance, options = {}) => (
   dispatch,
   getState
@@ -409,7 +377,7 @@ const fetchSpacesPaginateCall = (webexInstance, options = {}) => (
  * @param {object} [options={}]
  * @returns {function} thunk
  */
-export const fetchSpacesEncryptedPaginate = (
+export const fetchSpacesPaginate = (
   webexInstance,
   options = {}
 ) => dispatch => {
@@ -419,36 +387,98 @@ export const fetchSpacesEncryptedPaginate = (
 };
 
 /**
- * Fetches a list of spaces with options
+ * Loads activities for a conversation previous to the maxDate
  *
  * @export
- * @param {Object} webexInstance
- * @param {Object} options
- * @returns {Function} thunk
+ * @param {object} space
+ * @param {string} maxDate
+ * @param {object} webex
+ * @param {object} filesStore
+ * @returns {function}
  */
-export const fetchSpaces = (webexInstance, options = {}) => (
+export const loadPreviousMessages = (space, maxDate, webex, filesStore) => (
   dispatch,
   getState
 ) => {
-  const currentUserId = getState().users.currentUserId;
-  const listOptions = Object.assign({}, spacesConversationOptions, options);
+  const { id, url } = space;
+  return webex.internal.conversation
+    .listActivities({
+      conversationUrl: url,
+      lastActivityFirst: true,
+      limit: 20,
+      maxDate: Date.parse(maxDate) || Date.now()
+    })
+    .then(activities => {
+      const filteredActivities = filterActivities(activities);
 
-  return webexInstance.internal.conversation
-    .list(listOptions)
-    .then(spaces => {
-      dispatch(storeSpaces(spaces));
-
-      const constructedSpaces = spaces.map(s =>
-        constructSpace(s, currentUserId)
+      // store images
+      filteredActivities.forEach(item =>
+        saveFileFromActivities(webex, filesStore, item)
       );
 
-      return Promise.resolve(constructedSpaces);
-    })
-    .catch(err => {
-      addLoadError(dispatch, err.name);
-
-      throw err;
+      // store activities
+      dispatch(storeActivities(filteredActivities)).then(storedActivities => {
+        // store spaces
+        const spaceActivities = getState().spaces.entities[id].activities;
+        dispatch(
+          updateSpace({
+            id,
+            activities: [
+              ...new Set([
+                ...storedActivities.map(i => i.id),
+                ...spaceActivities
+              ])
+            ]
+          })
+        );
+      });
+      return Promise.resolve(filteredActivities);
     });
+};
+
+/**
+ * Acknowledges (marks as read) an activity
+ * @param {object} conversation (immutable object expected)
+ * @param {object} activity
+ * @param {object} spark
+ * @returns {function}
+ */
+export const acknowledgeActivityOnServer = (
+  webex,
+  space,
+  activity
+) => dispatch => {
+  webex.internal.conversation
+    .acknowledge(space, activity)
+    .then(() =>
+      dispatch(
+        updateSpace({ id: space.id, lastAcknowledgedActivityId: activity.id })
+      )
+    );
+};
+
+/**
+ * Update any widgetmessage options in given space
+ * scrolledBottom
+ * windowHeight
+ * loadHistory
+ * scrollTop
+ * initial
+ * activitiesLength
+ * @param {string} id Space ID
+ * @param {object} widgetOptions Widget Message's Options to be upserted
+ */
+export const updateWidgetInSpace = (id, widgetOptions) => (
+  dispatch,
+  getState
+) => {
+  const widgetMessage = getState().spaces.entities[id].widgetMessage;
+  dispatch(
+    updateSpace({
+      id,
+      widgetMessage: { ...widgetMessage, ...widgetOptions }
+    })
+  );
 };
 
 // Export the customized selectors for this adapter using `getSelectors`

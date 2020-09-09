@@ -1,25 +1,24 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
+import clsx from "clsx";
 import { useSelector } from "react-redux";
 
-import { Loading } from "../Loading/Loading";
-import { SpaceBoxList } from "./SpaceBoxList";
+import { SpaceBoxMessage } from "./Message/SpaceBoxMessage";
+import { SpacePeople } from "./People/SpacePeople";
 
-import LoadingImg from "../../img/loading.svg";
+const Tab = ({ text, value, tab, setTab }) => {
+  const tabClass = clsx("msg-header-tab", tab === value && "selected");
+  return (
+    <div className={tabClass} onClick={() => setTab(value)}>
+      {text}
+    </div>
+  );
+};
 
 export const SpaceBox = ({ id }) => {
+  const [tab, setTab] = useState("messages");
   const space = useSelector(state => state.spaces.entities[id]);
-  const [boxRef, setBoxRef] = useState(null);
-  const seeBox = useCallback(node => {
-    setBoxRef(node);
-    if (node !== null) node.focus();
-  }, []);
-
-  const handleKeyPress = event => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      console.log(boxRef.current.innerHTML);
-    }
-  };
+  const tabParams = { tab, setTab };
+  const peopleText = `People ${space.participants.length}`;
 
   return (
     <>
@@ -32,35 +31,12 @@ export const SpaceBox = ({ id }) => {
           </div>
         </div>
         <div className="msg-header-tabs">
-          <div className="msg-header-tab selected">Messages</div>
-          <div className="msg-header-tab">
-            People ({space.participants.length})
-          </div>
-          <div className="msg-header-tab">Content</div>
-          <div className="msg-header-tab">Schedule</div>
+          <Tab text="Messages" value="messages" {...tabParams} />
+          <Tab text={peopleText} value="people" {...tabParams} />
         </div>
       </div>
-      <div className="msg-window">
-        {space.hasFetchedActivities && <SpaceBoxList id={id} />}
-        {!space.hasFetchedActivities && (
-          <Loading img={LoadingImg} text="Loading conversations..." />
-        )}
-      </div>
-      <div className="msg-reply-window">
-        <div className="msg-reply-toolkit"></div>
-        <div className="msg-reply-main">
-          <div
-            className="msg-reply-box"
-            contentEditable={true}
-            datatext={`Write a message to ${space.displayName}`}
-            onKeyPress={e => handleKeyPress(e)}
-            ref={seeBox}
-          ></div>
-          <button className="msg-reply-btn">
-            <ion-icon name="play-circle-outline"></ion-icon>
-          </button>
-        </div>
-      </div>
+      {tab === "messages" && <SpaceBoxMessage space={space} />}
+      {tab === "people" && <SpacePeople space={space} />}
     </>
   );
 };

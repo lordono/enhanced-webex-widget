@@ -46,6 +46,9 @@ export const getActivityList = createSelector(
 
     space.activities.forEach(activityId => {
       const activity = activities[activityId];
+      if (!activity) {
+        console.log(activity, activityId);
+      }
       if (isActivityVisible(activity)) {
         // Insert day separator if this activity and last one happen on a different day
         const activityDay = endOfDay(parseISO(activity.published));
@@ -113,14 +116,23 @@ export const getActivityList = createSelector(
           creation = true;
         }
 
+        // delete message
+        let msgDeleted = false;
+        if (activity.type === "delete" || activity.type === "tombstone") {
+          msgDeleted = true;
+        }
+
         const visibleActivity = {
           type: ITEM_TYPE_ACTIVITY,
           id: activity.id,
           isAdditional,
           isSelf: currentUser.id === activity.actor,
           currentUser: currentUser.id,
+          published: activity.published,
+          url: activity.url,
           name,
-          creation
+          creation,
+          msgDeleted
         };
 
         visibleActivityList.push(visibleActivity);

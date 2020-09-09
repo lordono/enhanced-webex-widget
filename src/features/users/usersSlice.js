@@ -1,5 +1,9 @@
 import { validateAndDecodeId } from "@webex/react-component-utils";
-import { createSlice, createEntityAdapter } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createEntityAdapter,
+  createSelector
+} from "@reduxjs/toolkit";
 
 import { addAvatar } from "../avatars/avatarsSlice";
 import { convertToSmallAvatar } from "../avatars/helpers";
@@ -211,11 +215,19 @@ export const getUser = ({ email, id }, webex) => (dispatch, getState) => {
 // Export the customized selectors for this adapter using `getSelectors`
 export const {
   selectAll: selectAllUsers,
+  selectEntities: selectAllUserEntities,
   selectById: selectUserById,
   selectIds: selectUserIds
 } = usersAdapter.getSelectors(state => state.users);
 
 export const selectCurrentUser = state =>
   state.users.entities[state.users.currentUserId];
+
+export const selectUsersByIds = createSelector(
+  [selectAllUserEntities, (_, ids) => ids],
+  (userEntities, ids) => {
+    return Object.values(userEntities).filter(user => ids.includes(user.id));
+  }
+);
 
 export default usersSlice.reducer;

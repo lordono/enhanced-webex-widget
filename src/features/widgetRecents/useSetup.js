@@ -10,7 +10,7 @@ import {
 import { StoreContext } from "../webex/webexStore";
 // import { fetchAvatar } from "../avatars/avatarsSlice";
 import { getFeature } from "../feature/featureSlice";
-import { fetchSpacesEncryptedPaginate } from "../spaces/spacesSlice";
+import { fetchSpacesPaginate } from "../spaces/spacesSlice";
 import { connectToMercury } from "../mercury/mercurySlice";
 import { storeUser } from "../users/usersSlice";
 import { updateStatus as updateWidgetStatus } from "./widgetRecentsSlice";
@@ -110,9 +110,7 @@ const getAllSpaces = webexInstance => (dispatch, getState) => {
      * This allows us to show the encrypted spaces in the spaces list
      * and decrypt individually to give a good initial user experience.
      */
-    dispatch(
-      fetchSpacesEncryptedPaginate(webexInstance, { conversationsLimit: 25 })
-    )
+    dispatch(fetchSpacesPaginate(webexInstance, { conversationsLimit: 25 }))
       .then(spaces => {
         dispatch(
           updateWidgetStatus({

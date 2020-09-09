@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { formatUserMovement } from "../../formatText";
+import { formatUserMovement } from "../../../formatText";
 import { SpaceBoxSystemMessage } from "./SpaceBoxSystemMessage";
 
 export const SpaceBoxSystemUser = ({ id, isSelf }) => {

@@ -5,8 +5,9 @@ export const localSearch = (spaceArray, userArray, text) => {
     const spaceResults = spaceArray
       .filter(
         i =>
-          i.displayName.replace(/\s/g, "").toLowerCase().includes(lowerText) ||
-          (i.emailAddress && i.emailAddress.includes(lowerText))
+          !i.isFetching &&
+          (i.displayName.replace(/\s/g, "").toLowerCase().includes(lowerText) ||
+            (i.email && i.email.includes(lowerText)))
       )
       .map(i => {
         let type = "space";

@@ -7,6 +7,7 @@ import {
 import { constructActivity, normalizeActivity } from "./helpers";
 import { storeThread } from "../threads/threadsSlice";
 import { storeReaction } from "../reactions/reactionsSlice";
+import { storeUser } from "../users/usersSlice";
 
 const activitiesAdapter = createEntityAdapter();
 
@@ -40,6 +41,7 @@ export const storeActivities = activities => (dispatch, getState) => {
   const activitiesToAdd = [];
   const threadsToStore = [];
   activities.forEach(activity => {
+    // handle reactions
     if (
       activity.verb === "add" &&
       activity.object &&
@@ -48,9 +50,15 @@ export const storeActivities = activities => (dispatch, getState) => {
       dispatch(storeReaction(activity));
     } else {
       const receivedActivity = normalizeActivity(activity);
+      // handle any user activity by adding to store
+      if (activity.object && activity.object.objectType === "person") {
+        dispatch(storeUser(activity.object));
+      }
+      // handle if activity is a thread
       if (activity.activityType && activity.activityType === "reply") {
         threadsToStore.push(receivedActivity);
       }
+      // check if we should add or update activties
       if (store.ids.includes(activity.id)) {
         activitiesToUpdate.push(constructActivity(receivedActivity));
       } else {

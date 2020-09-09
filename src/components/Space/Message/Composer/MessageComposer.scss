@@ -1,0 +1,159 @@
+@import "../../../../variables.scss";
+
+.editor-container {
+  width: calc(100% - 5px);
+  padding: 5px 0 5px 5px;
+  background-color: $primary-color;
+  color: $text-color;
+
+  .editor-options {
+    display: flex;
+    padding: 5px 5px 0;
+    font-size: 22.5px;
+    .editor-file-input {
+      display: none;
+    }
+    .editor-options-btn {
+      margin-right: 5px;
+      border-radius: 2.5px;
+      cursor: pointer;
+      &:hover {
+        color: #91d5ff;
+      }
+    }
+  }
+  .editor-files-staging {
+    display: flex;
+    overflow-x: auto;
+
+    /* width */
+    &::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: darken($secondary-color, 2.5%);
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: lighten($secondary-color, 5%);
+    }
+
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+      background: lighten($secondary-color, 7.5%);
+    }
+
+    .editor-file-staged {
+      display: flex;
+      padding: 5px;
+      margin-right: 5px;
+      margin-top: 5px;
+      position: relative;
+      .editor-file-img {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 7px;
+        background-color: lighten($secondary-color, 10%);
+        min-width: 50px;
+
+        img {
+          height: 45px;
+        }
+      }
+      .editor-file-main {
+        padding: 7px;
+        background-color: lighten($secondary-color, 2.5%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 75px;
+        .editor-file-title {
+          font-size: 12.5px;
+          margin-bottom: 5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .editor-file-size {
+          font-size: 10.5px;
+          color: $placeholder-color;
+        }
+      }
+      .editor-file-remove {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        font-size: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        &:hover {
+          color: darken($text-color, 20%);
+        }
+      }
+    }
+  }
+  .editor {
+    padding: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    /* width */
+    &::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: darken($secondary-color, 2.5%);
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: lighten($secondary-color, 5%);
+    }
+
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+      background: lighten($secondary-color, 7.5%);
+    }
+
+    spark-mention {
+      background-color: rgba(255, 255, 255, 0.65);
+      color: $primary-color;
+      cursor: pointer;
+      padding: 1.5px 3.5px;
+      border-radius: 2px;
+      &::before {
+        content: "@";
+      }
+    }
+  }
+}
+
+.emoji-container {
+  position: relative;
+  .emoji-mart {
+    position: absolute;
+    top: -310px;
+    .emoji-mart-bar {
+      display: none;
+    }
+    .emoji-mart-emoji-native {
+      width: 39px;
+      height: 39px;
+      display: flex;
+      outline: none;
+      cursor: pointer;
+      span {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.hide {
+  display: none;
+}

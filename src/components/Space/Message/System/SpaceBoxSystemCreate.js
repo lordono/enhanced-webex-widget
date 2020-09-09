@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { formatMsgTime } from "../../formatDates";
+import { formatMsgTime } from "../../../formatDates";
 import { SpaceBoxSystemMessage } from "./SpaceBoxSystemMessage";
 
 export const SpaceBoxSystemCreate = ({ id, isSelf }) => {

@@ -37,5 +37,9 @@ export const dedupUserSpaces = array => {
 };
 
 export const removeSelf = (array, selfId) => {
-  return array.filter(i => i.userId !== selfId);
+  return array.filter(i => i.id !== selfId);
+};
+
+export const removeExisting = (array, ids) => {
+  return array.filter(i => !ids.includes(i.id));
 };

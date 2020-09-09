@@ -1,20 +1,17 @@
-import React, { useContext } from "react";
+import React from "react";
 import clsx from "clsx";
-// import DOMPurify from "dompurify";
-import ReactHtmlParser from "react-html-parser";
 import { parseISO, isAfter } from "date-fns";
 import { useSelector } from "react-redux";
-import { selectReactionById } from "../../features/reactions/reactionsSlice";
-import { selectThreadById } from "../../features/threads/threadsSlice";
-import { formatActivity } from "../../features/activities/helpers";
+import { selectReactionById } from "../../../features/reactions/reactionsSlice";
+import { selectThreadById } from "../../../features/threads/threadsSlice";
+import { formatActivity } from "../../../features/activities/helpers";
+import { formatMsgTime } from "../../formatDates";
+
 import { ReactionRow } from "./Reaction/ReactionRow";
 import { SpaceBoxThread } from "./SpaceBoxThread";
-import { formatMsgTime } from "../formatDates";
-import { FilesContext } from "../../features/files/filesStore";
-import LoadingImg from "../../img/loading.svg";
+import { SpaceContent } from "./SpaceContent";
 
 const Row = ({ id, isAdditional, isSelf, currentUser }) => {
-  const { files } = useContext(FilesContext);
   const activity = useSelector(s => s.activities.entities[id]);
   const reactions = useSelector(s => selectReactionById(s, activity.id));
   const author = useSelector(s => s.users.entities[activity.actor]);
@@ -37,44 +34,6 @@ const Row = ({ id, isAdditional, isSelf, currentUser }) => {
     });
   }
 
-  // render content
-  const renderContent = activity => {
-    let fileContent = null;
-    let textContent = null;
-    if (activity.type === "share") {
-      if (
-        activity.object.objectType === "content" &&
-        activity.object.contentCategory === "images"
-      ) {
-        fileContent = (
-          <div>
-            {activity.object.files.map(item => {
-              let content = LoadingImg;
-              if (
-                Object.keys(files).includes(item.url) &&
-                !files[item.url].isFetching
-              ) {
-                content = URL.createObjectURL(files[item.url].blob);
-              }
-              return <img src={content} key={item.url} alt={item.url} />;
-            })}
-          </div>
-        );
-      } else {
-        fileContent = "--File-Upload--";
-      }
-    }
-    if (activity.object.content) {
-      textContent = ReactHtmlParser(activity.object.content);
-    }
-    return (
-      <>
-        {fileContent}
-        {textContent}
-      </>
-    );
-  };
-
   const authorName = isSelf ? "You" : author.displayName.trim();
   const rowClass = clsx("msg-row", isAdditional && "same-user");
 
@@ -92,10 +51,7 @@ const Row = ({ id, isAdditional, isSelf, currentUser }) => {
             </div>
           )}
           <div className="msg-row-content">
-            {renderContent(formattedActivity)}
-            {/* {formattedActivity.object.content
-              ? ReactHtmlParser(formattedActivity.object.content)
-              : "--File-Upload--"} */}
+            <SpaceContent activity={formattedActivity} />
             <ReactionRow reactions={reactions} />
           </div>
         </div>

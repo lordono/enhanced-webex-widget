@@ -1,11 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { updateStatus as updateWidgetStatus } from "../../features/widgetRecents/widgetRecentsSlice";
 import { StoreContext } from "../../features/webex/webexStore";
-import { FilesContext } from "../../features/files/filesStore";
 
-import { useDebouncedSearch } from "./useDebouncedSearch";
+import { useDebouncedSearch } from "../useDebouncedSearch";
 import {
   localSearch,
   cleanRemoteResults,
@@ -19,7 +18,6 @@ import "./Recent.scss";
 
 export const Recent = () => {
   const [webex] = useContext(StoreContext);
-  const filesStore = useContext(FilesContext);
   // mode determine if it is search/spaces
   const mode = useSelector(state => state.widgetRecents.status.mode);
   const dispatch = useDispatch();
@@ -45,10 +43,6 @@ export const Recent = () => {
     ]),
     currentUserId
   );
-
-  useEffect(() => {
-    console.log(filesStore.files);
-  }, [filesStore.files]);
 
   return (
     <div className="App-recent">
@@ -76,6 +70,7 @@ export const Recent = () => {
       {mode === "search" && (
         <div className="recent-content">
           <RecentSearchList
+            inputText={inputText}
             loading={searchResults.loading}
             searchList={finalResult}
           />
