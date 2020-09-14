@@ -17,6 +17,7 @@ import { getActivityList } from "../../../features/activities/selectors";
 import { SpaceBoxSystemUser } from "./System/SpaceBoxSystemUser";
 import { SpaceBoxSystemCreate } from "./System/SpaceBoxSystemCreate";
 import { SpaceBoxSystemDelete } from "./System/SpaceBoxSystemDelete";
+import { MessageReceipts } from "./Receipts/MessageReceipts";
 
 export const SpaceBoxList = ({ space }) => {
   const { lastAcknowledgedActivityId, widgetMessage } = space;
@@ -185,6 +186,7 @@ export const SpaceBoxList = ({ space }) => {
         <div className="load-more">Loading More...</div>
       )}
       {activities.map(activity => renderActivity(activity))}
+      <MessageReceipts readReceipts={space.readReceipts} />
     </div>
   );
 };

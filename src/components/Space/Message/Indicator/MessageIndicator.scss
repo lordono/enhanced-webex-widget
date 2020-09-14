@@ -1,0 +1,16 @@
+.indicator-container {
+  height: 30px;
+  min-height: 30px;
+  width: 100%;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  .indicator-img {
+    height: 30px;
+    margin-right: 5px;
+
+    &.hide {
+      opacity: 0;
+    }
+  }
+}

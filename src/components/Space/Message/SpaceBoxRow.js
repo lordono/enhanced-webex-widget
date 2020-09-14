@@ -35,12 +35,17 @@ const Row = ({ id, isAdditional, isSelf, currentUser }) => {
   }
 
   const authorName = isSelf ? "You" : author.displayName.trim();
+  const authorAvatar = author => {
+    const name = author.displayName.trim();
+    const nameList = name.split(/\s/).map(i => i[0]);
+    return nameList.slice(0, 2).join("");
+  };
   const rowClass = clsx("msg-row", isAdditional && "same-user");
 
   return (
     <>
       <div className={rowClass} key={formattedActivity.id}>
-        {!isAdditional && <div className="avatar">{authorName[0]}</div>}
+        {!isAdditional && <div className="avatar">{authorAvatar(author)}</div>}
         <div className="msg-row-info">
           {!isAdditional && (
             <div className="msg-row-main">

@@ -28,6 +28,7 @@ import { storeUser } from "../users/usersSlice";
 import { eventNames } from "./events";
 import { getToParticipant, getSpaceAvatar } from "./helpers";
 import { FilesContext, saveFileFromActivities } from "../files/filesStore";
+import { storeIndicator } from "../indicator/indicatorSlice";
 
 /**
  * Event handler that logs data then sends to the onEvent function
@@ -252,6 +253,7 @@ export const useListeners = onEvent => {
     if (currentUser && !widgetStatus.isListeningForNewActivity) {
       dispatch(updateWidgetStatus({ isListeningForNewActivity: true }));
 
+      // listen to activity events
       webexInstance.internal.mercury.on("event:conversation.activity", event =>
         dispatch(
           handleNewActivity(
@@ -260,6 +262,13 @@ export const useListeners = onEvent => {
             filesStore,
             onEvent
           )
+        )
+      );
+
+      // listen to typing events
+      webexInstance.internal.mercury.on("event:status.start_typing", event =>
+        dispatch(
+          storeIndicator(event.data.conversationId, event.data.actor.entryUUID)
         )
       );
     }

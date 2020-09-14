@@ -9,10 +9,10 @@ import webexReducer from "../features/webex/webexSlice";
 import featuresReducer from "../features/feature/featureSlice";
 import widgetRecentsReducer from "../features/widgetRecents/widgetRecentsSlice";
 import widgetMessageReducer from "../features/widgetMessage/widgetMessageSlice";
-import indicatorsReducer from "../features/indicators/indicatorsSlice";
 import reactionsReducer from "../features/reactions/reactionsSlice";
 import threadsReducer from "../features/threads/threadsSlice";
 import composeReducer from "../features/compose/composeSlice";
+import indicatorReducer from "../features/indicator/indicatorSlice";
 
 export default configureStore({
   middleware: getDefaultMiddleware({
@@ -28,7 +28,6 @@ export default configureStore({
   reducer: {
     errors: errorsReducer,
     mercury: mercuryReducer,
-    indicators: indicatorsReducer,
     widgetRecents: widgetRecentsReducer,
     widgetMessage: widgetMessageReducer,
     avatars: avatarsReducer,
@@ -39,6 +38,7 @@ export default configureStore({
     users: usersReducer,
     features: featuresReducer,
     webex: webexReducer,
-    compose: composeReducer
+    compose: composeReducer,
+    indicator: indicatorReducer
   }
 });

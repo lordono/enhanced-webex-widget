@@ -2,13 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import clsx from "clsx";
 import { useSelector, useDispatch } from "react-redux";
 import { isImage, sanitize, constructFile } from "@webex/react-component-utils";
-import {
-  Editor,
-  EditorState,
-  RichUtils,
-  Modifier,
-  convertToRaw
-} from "draft-js";
+import { Editor, EditorState, RichUtils, Modifier } from "draft-js";
 import { stateFromHTML } from "draft-js-import-html";
 import { stateToMarkdown } from "draft-js-export-markdown";
 import { stateToHTML } from "draft-js-export-html";
@@ -17,6 +11,7 @@ import "emoji-mart/css/emoji-mart.css";
 import "draft-js/dist/Draft.css";
 import "./MessageComposer.scss";
 
+import { useTimer } from "../useTimer";
 import { ComposeContext } from "../../../../features/compose/composeStore";
 import { StoreContext } from "../../../../features/webex/webexStore";
 import {
@@ -51,6 +46,9 @@ export const MessageComposer = () => {
   const emojiRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  const clock = useTimer(5000);
+
+  const [isTyping, setIsTyping] = useState(false);
   const [initial, setInitial] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
   const [insertEmoji, setInsertEmoji] = useState(false);
@@ -203,7 +201,19 @@ export const MessageComposer = () => {
     const html = stateToHTML(newEditorState.getCurrentContent());
     handleTyping(html, markdown);
     setEditorState(newEditorState);
+
+    // mark typing for webex
+    if (!isTyping) {
+      setIsTyping(true);
+      webex.internal.conversation.updateTypingStatus(selectedSpace, {
+        typing: true
+      });
+    }
   };
+  // reset typing status every 5 seconds
+  useEffect(() => {
+    setIsTyping(false);
+  }, [clock]);
 
   // handle key commands for editor
   const handleKeyCommand = (command, editorState) => {

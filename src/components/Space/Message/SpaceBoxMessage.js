@@ -5,6 +5,7 @@ import { Loading } from "../../Loading/Loading";
 
 import { SpaceBoxList } from "./SpaceBoxList";
 import { MessageComposer } from "./Composer/MessageComposer";
+import { MessageIndicator } from "./Indicator/MessageIndicator";
 
 export const SpaceBoxMessage = ({ space }) => {
   return (
@@ -16,6 +17,7 @@ export const SpaceBoxMessage = ({ space }) => {
         </div>
       )}
       {space.hasFetchedActivities && <MessageComposer />}
+      {space.hasFetchedActivities && <MessageIndicator spaceId={space.id} />}
     </>
   );
 };

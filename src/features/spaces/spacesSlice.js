@@ -235,7 +235,6 @@ export const updateSpaceWithActivity = (
     id: activity.target.id,
     activities: targetSpace.activities.concat(activity.id),
     latestActivity: activity.id,
-    readReceipts: [],
     isLocked: activity.object.tags && activity.object.tags.includes(TAG_LOCKED)
   };
 
@@ -255,6 +254,7 @@ export const updateSpaceWithActivity = (
 
   if (isReadable) {
     space.lastReadableActivityDate = activity.published;
+    space.readReceipts = [];
   }
 
   dispatch(updateSpace(space));
