@@ -17,6 +17,7 @@ import { getActivityList } from "../../../features/activities/selectors";
 import { SpaceBoxSystemUser } from "./System/SpaceBoxSystemUser";
 import { SpaceBoxSystemCreate } from "./System/SpaceBoxSystemCreate";
 import { SpaceBoxSystemDelete } from "./System/SpaceBoxSystemDelete";
+import { SpaceBoxSystemLocus } from "./System/SpaceBoxSystemLocus";
 import { MessageReceipts } from "./Receipts/MessageReceipts";
 
 export const SpaceBoxList = ({ space }) => {
@@ -111,42 +112,44 @@ export const SpaceBoxList = ({ space }) => {
   //
   const handleScroll = () => {
     const node = windowRef.current;
-    const { scrollTop, scrollHeight, offsetHeight } = node;
+    if (node) {
+      const { scrollTop, scrollHeight, offsetHeight } = node;
 
-    const isScrolledToTop = scrollTop < 100;
-    const isScrolledToBottom = scrollHeight - offsetHeight - scrollTop < 150;
+      const isScrolledToTop = scrollTop < 100;
+      const isScrolledToBottom = scrollHeight - offsetHeight - scrollTop < 150;
 
-    // load more activities if required
-    if (isScrolledToTop) {
-      if (firstActivity && !firstActivity.creation && !loadHistory) {
-        const { published } = firstActivity;
-        dispatch(updateWidget(space.id, { scrollTop, loadHistory: true }));
-        dispatch(
-          loadPreviousMessages(space, published, webex, filesStore)
-        ).then(() => {
-          const node = windowRef.current;
-          node.scrollTo({ top: node.scrollHeight - windowHeight });
+      // load more activities if required
+      if (isScrolledToTop) {
+        if (firstActivity && !firstActivity.creation && !loadHistory) {
+          const { published } = firstActivity;
+          dispatch(updateWidget(space.id, { scrollTop, loadHistory: true }));
           dispatch(
-            updateWidget(space.id, {
-              windowHeight: node.scrollHeight,
-              loadHistory: false
-            })
-          );
-        });
+            loadPreviousMessages(space, published, webex, filesStore)
+          ).then(() => {
+            const node = windowRef.current;
+            node.scrollTo({ top: node.scrollHeight - windowHeight });
+            dispatch(
+              updateWidget(space.id, {
+                windowHeight: node.scrollHeight,
+                loadHistory: false
+              })
+            );
+          });
+        }
       }
-    }
 
-    // send acknowledge to server if required
-    if (isScrolledToBottom) {
-      dispatch(updateWidget(space.id, { scrollTop, scrolledBottom: true }));
-      console.log("scrolled to bottom");
-      if (needAck) {
-        console.log("need to acknowledge here.");
-        const activity = { id: lastActivity.id, url: lastActivity.url };
-        dispatch(acknowledgeActivityOnServer(webex, space, activity));
+      // send acknowledge to server if required
+      if (isScrolledToBottom) {
+        dispatch(updateWidget(space.id, { scrollTop, scrolledBottom: true }));
+        console.log("scrolled to bottom");
+        if (needAck) {
+          console.log("need to acknowledge here.");
+          const activity = { id: lastActivity.id, url: lastActivity.url };
+          dispatch(acknowledgeActivityOnServer(webex, space, activity));
+        }
+      } else {
+        dispatch(updateWidget(space.id, { scrollTop, scrolledBottom: false }));
       }
-    } else {
-      dispatch(updateWidget(space.id, { scrollTop, scrolledBottom: false }));
     }
   };
 
@@ -162,6 +165,8 @@ export const SpaceBoxList = ({ space }) => {
           return <SpaceBoxSystemCreate key={obj.id} {...obj} />;
         } else if (obj.msgDeleted) {
           return <SpaceBoxSystemDelete key={obj.id} {...obj} />;
+        } else if (obj.locus) {
+          return <SpaceBoxSystemLocus key={obj.id} {...obj} />;
         } else {
           return <SpaceBoxRow key={obj.id} {...obj} />;
         }

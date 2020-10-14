@@ -4,6 +4,8 @@ import { unregisterDevice } from "./features/webex/webexSlice";
 import { StoreContext } from "./features/webex/webexStore";
 import { Base } from "./components/Base/Base";
 
+import "./App.css";
+
 function App({ token, onEvent }) {
   const [show, setShow] = useState(true);
   const dispatch = useDispatch();
@@ -14,10 +16,8 @@ function App({ token, onEvent }) {
     dispatch(unregisterDevice(webex));
   };
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-    >
-      <button style={{ marginBottom: 10, padding: 10 }} onClick={onClick}>
+    <div>
+      <button className="unregister-button" onClick={onClick}>
         Unregister
       </button>
       {show && <Base token={token} onEvent={onEvent} />}

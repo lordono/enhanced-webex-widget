@@ -15,8 +15,8 @@ import {
 } from "../helpers";
 
 export const SpacePeople = ({ space }) => {
-  const [addingStatus, setAddingStatus] = useState(false);
-  const [removingStatus, setRemovingStatus] = useState(false);
+  const [, setAddingStatus] = useState(false);
+  const [, setRemovingStatus] = useState(false);
 
   const [webex] = useContext(StoreContext);
   const userArray = useSelector(state => Object.values(state.users.entities));

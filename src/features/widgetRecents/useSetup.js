@@ -112,21 +112,39 @@ const getAllSpaces = webexInstance => (dispatch, getState) => {
      */
     dispatch(fetchSpacesPaginate(webexInstance, { conversationsLimit: 25 }))
       .then(spaces => {
-        dispatch(
-          updateWidgetStatus({
-            hasFetchedInitialSpaces: true
-          })
-        );
+        // dispatch(
+        //   updateWidgetStatus({
+        //     isFetchingInitialSpaces: false,
+        //     hasFetchedInitialSpaces: true,
+        //     isFetchingAllSpaces: true
+        //   })
+        // );
+        // let allParticipants = [];
+
         spaces.forEach(space => {
+          // put all participants into an array for presence
+          // allParticipants = allParticipants.concat(
+          //   space.participants.map(i => i.id)
+          // );
+
           // Store the to user in a direct convo to calculate space title
           if (space.type === SPACE_TYPE_ONE_ON_ONE) {
             dispatch(storeToParticipant(space));
           }
         });
+
+        // allParticipants = allParticipants.filter(
+        //   (item, index, self) => index === self.findIndex(t => t === item)
+        // );
+        // console.log(allParticipants);
+        // webexInstance.internal.presence.list(allParticipants).then(response => {
+        //   console.log(response);
+        // });
       })
       .then(() => {
         dispatch(
           updateWidgetStatus({
+            isFetchingAllSpaces: false,
             hasFetchedAllSpaces: true
           })
         );

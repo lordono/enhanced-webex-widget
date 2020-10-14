@@ -1,0 +1,44 @@
+@import "../../variables.scss";
+
+.app-content-hunting {
+  width: 100%;
+  height: 100%;
+  background-color: $primary-color;
+  color: $text-color;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .App-recent {
+    width: calc(100% - 400px);
+    .recent-content {
+      height: calc(100% - 37.5px);
+      .App-recent-row {
+        .radio-container {
+          padding: 2.5px;
+          display: flex;
+          align-items: center;
+          margin-right: 10px;
+          border-radius: 5px;
+          font-size: 15px;
+        }
+        .chat-row-info {
+          .chat-row-sub {
+            .chat-row-pax {
+              display: flex;
+              align-items: center;
+              font-size: 13.5px;
+              color: $placeholder-color;
+              line-height: 0.7;
+              .chat-row-pax-icon {
+                margin-left: 5px;
+                font-size: 15px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

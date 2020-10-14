@@ -188,13 +188,18 @@ export const MessageComposer = () => {
 
   // handle typing
   const handleTyping = (html, markdown) => {
-    dispatch(
-      updateCompose({
-        id: selectedCompose.id,
-        content: html,
-        displayName: markdown
-      })
-    );
+    if (
+      selectedCompose.content !== html ||
+      selectedCompose.displayName !== markdown
+    ) {
+      dispatch(
+        updateCompose({
+          id: selectedCompose.id,
+          content: html,
+          displayName: markdown
+        })
+      );
+    }
   };
   const onEditorChange = newEditorState => {
     const markdown = stateToMarkdown(newEditorState.getCurrentContent());

@@ -21,6 +21,7 @@ export const widgetRecentsSlice = createSlice({
       isListeningForNewActivity: false,
       hasFetchedGroupMessageNotificationFeature: false,
       hasFetchedMentionNotificationFeature: false,
+      scrollTopValue: 0,
       isScrolledToTop: true
     }
   },

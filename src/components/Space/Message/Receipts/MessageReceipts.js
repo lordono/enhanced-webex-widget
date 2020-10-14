@@ -10,7 +10,7 @@ export const MessageReceipts = ({ readReceipts }) => {
   // exclude current user
   const otherReceipts = readReceipts.filter(i => i !== currentUser);
 
-  const revealNumber = 1;
+  const revealNumber = 8;
   const firstFewReceipts = otherReceipts.slice(0, revealNumber);
   const leftoverReceipts = otherReceipts.slice(revealNumber);
 
@@ -42,7 +42,7 @@ export const MessageReceipts = ({ readReceipts }) => {
           <ReactTooltip id="leftoverReceipts" effect="solid">
             <>
               {leftoverReceipts.map(i => (
-                <p>{users[i].displayName}</p>
+                <p key={i}>{users[i].displayName}</p>
               ))}
             </>
           </ReactTooltip>

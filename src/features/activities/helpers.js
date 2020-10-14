@@ -127,7 +127,7 @@ export function filterActivities(activities) {
   });
 }
 
-// not handling locus properly...
+// still not handling locus properly
 export const VISIBLE_ACTIVITY_VERBS = {
   tombstone: {},
   share: {
@@ -139,9 +139,10 @@ export const VISIBLE_ACTIVITY_VERBS = {
   create: {
     objectTypes: ["conversation"]
   },
-  // update: {
-  //   objectTypes: ["locusSessionSummaryParticipant", "locusSessionSummary"]
-  // },
+  update: {
+    objectTypes: ["locusSessionSummary"]
+    // objectTypes: ["locusSessionSummaryParticipant", "locusSessionSummary"]
+  },
   add: {
     objectTypes: ["person"]
   },

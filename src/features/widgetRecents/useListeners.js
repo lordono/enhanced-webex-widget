@@ -28,6 +28,7 @@ import { storeUser } from "../users/usersSlice";
 import { eventNames } from "./events";
 import { getToParticipant, getSpaceAvatar } from "./helpers";
 import { FilesContext, saveFileFromActivities } from "../files/filesStore";
+import { MeetingContext } from "../meeting/meetingStore";
 import { storeIndicator } from "../indicator/indicatorSlice";
 
 /**
@@ -99,6 +100,13 @@ const processActivity = (
       }
       // Emit message:created event
       handleEvent(eventNames.MESSAGES_CREATED, otherUser, activity, onEvent);
+      break;
+    }
+    case API_ACTIVITY_VERB.UPDATE: {
+      // handle locusSessions information - update
+      if (activity.object.objectType === "locusSessionSummary") {
+        dispatch(updateSpaceWithActivity(activity, isSelf, true));
+      }
       break;
     }
     case API_ACTIVITY_VERB.LOCK:
@@ -244,6 +252,9 @@ const handleNewActivity = (activity, webexInstance, filesStore, onEvent) => (
 export const useListeners = onEvent => {
   const [webexInstance] = useContext(StoreContext);
   const filesStore = useContext(FilesContext);
+  const { meetingStore, updateMeeting, removeMeeting } = useContext(
+    MeetingContext
+  );
   const currentUser = useSelector(state => state.users.currentUserId);
   const widgetStatus = useSelector(state => state.widgetRecents.status);
   const dispatch = useDispatch();
@@ -271,12 +282,43 @@ export const useListeners = onEvent => {
           storeIndicator(event.data.conversationId, event.data.actor.entryUUID)
         )
       );
+
+      // listen to locus events
+      webexInstance.meetings.listenForEvents();
+      webexInstance.meetings.registered = true;
+
+      // get all existing meetings
+      // webexInstance.meetings.syncMeetings().then(() => {
+      //   // Existing meetings live in the meeting collection
+      //   const existingMeetings = webexInstance.meetings.getAllMeetings();
+      //   console.log(existingMeetings);
+      // });
+
+      // Listen for added meetings
+      console.log("listening to meeting events");
+      webexInstance.meetings.on("meeting:added", addedMeetingEvent => {
+        console.log("cic-logger: meeting added - ", addedMeetingEvent);
+        if (["INCOMING", "JOIN"].includes(addedMeetingEvent.type)) {
+          const { meeting } = addedMeetingEvent;
+          updateMeeting(meeting.conversationUrl, {
+            ...addedMeetingEvent
+          });
+        }
+      });
+      webexInstance.meetings.on("meeting:removed", removedMeetingEvent => {
+        console.log("cic-logger: meeting removed - ", removedMeetingEvent);
+        const { meetingId } = removedMeetingEvent;
+        removeMeeting(meetingId);
+      });
     }
   }, [
     dispatch,
     webexInstance,
     currentUser,
     filesStore,
+    meetingStore,
+    updateMeeting,
+    removeMeeting,
     widgetStatus.isListeningForNewActivity,
     onEvent
   ]);

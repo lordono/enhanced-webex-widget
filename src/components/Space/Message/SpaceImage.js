@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
+import Skeleton from "react-loading-skeleton";
 import filesize from "filesize";
 import { saveAs } from "file-saver";
 
-import LoadingImg from "../../../img/loading.svg";
 import { FilesContext } from "../../../features/files/filesStore";
 
 export const SpaceImage = ({ activity }) => {
@@ -10,21 +10,21 @@ export const SpaceImage = ({ activity }) => {
   return (
     <div>
       {activity.object.files.map(item => {
-        let content = LoadingImg;
+        const width = 300;
+        const height = (item.height * 300) / item.width;
+        let img = <Skeleton width={width} height={height} />;
         if (
           Object.keys(files).includes(item.url) &&
           !files[item.url].isFetching
         ) {
-          content = URL.createObjectURL(files[item.url].blob);
+          const content = URL.createObjectURL(files[item.url].blob);
+          img = (
+            <img src={content} alt={item.url} width={width} height={height} />
+          );
         }
         return (
           <div className="img-container" key={item.url}>
-            <img
-              src={content}
-              alt={item.url}
-              width={300}
-              height={(item.height * 300) / item.width}
-            />
+            {img}
             <div className="after">
               <div className="file-details">
                 <div className="file-filename">{item.displayName}</div>

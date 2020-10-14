@@ -83,10 +83,10 @@ export const getActivityList = createSelector(
         const isAdditional =
           sameDay &&
           sameMinute &&
-          lastActorId === activity.actor.id &&
+          lastActorId === activity.actor &&
           lastVerb === activity.type;
 
-        lastActorId = activity.actor.id;
+        lastActorId = activity.actor;
         lastVerb = activity.type;
 
         // let formattedActivity = activity;
@@ -122,6 +122,15 @@ export const getActivityList = createSelector(
           msgDeleted = true;
         }
 
+        // locustype message
+        let locus = false;
+        if (
+          activity.type === "update" &&
+          activity.object.objectType === "locusSessionSummary"
+        ) {
+          locus = true;
+        }
+
         const visibleActivity = {
           type: ITEM_TYPE_ACTIVITY,
           id: activity.id,
@@ -132,7 +141,8 @@ export const getActivityList = createSelector(
           url: activity.url,
           name,
           creation,
-          msgDeleted
+          msgDeleted,
+          locus
         };
 
         visibleActivityList.push(visibleActivity);
@@ -141,7 +151,7 @@ export const getActivityList = createSelector(
         const isLastAcked =
           lastAcknowledgedActivityId &&
           lastAcknowledgedActivityId === activity.id;
-        const isNotSelf = currentUser.id !== activity.actor.id;
+        const isNotSelf = currentUser.id !== activity.actor;
 
         if (isLastAcked && isNotSelf) {
           shouldDisplayNewMessageMarker = true;

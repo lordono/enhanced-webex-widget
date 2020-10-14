@@ -1,23 +1,249 @@
 @import "../../variables.scss";
 
-.App-chat {
+.app-container {
   background-color: #d7dae3;
-  min-height: 70vh;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
   font-size: 16px;
-}
+  min-height: 100vh;
+  width: 100%;
+  background-color: $primary-color;
+  // border-top-left-radius: $border-radius;
+  // border-bottom-left-radius: $border-radius;
+  .app-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $text-color;
+    min-height: 65px;
+    border-bottom: 1px solid $secondary-color;
+    .app-nav-tab {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 0 15px;
+      color: $placeholder-color;
+      transition: color 0.3s;
+      cursor: pointer;
 
-.App-link {
-  color: #61dafb;
-}
+      &.selected {
+        color: $text-color;
+        &:hover {
+          color: $text-color;
+        }
+      }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+      &:hover {
+        color: lighten($placeholder-color, 5%);
+      }
+
+      .app-nav-tab-icon {
+        font-size: 25px;
+      }
+      .app-nav-tab-title {
+        font-size: 12.5px;
+        font-weight: 700;
+      }
+    }
   }
-  to {
-    transform: rotate(360deg);
+  .app-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    min-height: calc(100vh - 74px);
+
+    .app-content-meeting {
+      width: 100%;
+      height: calc(100% - 80px);
+      padding: 40px 0;
+      position: absolute;
+      opacity: 0;
+      z-index: 100;
+      background-color: $primary-color;
+      pointer-events: none;
+
+      display: flex;
+
+      &.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .join-meeting-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        .join-meeting-title {
+          font-size: 25px;
+          font-weight: 300;
+          text-align: center;
+          color: $text-color;
+          margin-bottom: 20px;
+        }
+
+        .join-meeting-btn {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          color: $text-color;
+          background-color: $secondary-color;
+          width: 145px;
+          height: 145px;
+          border-radius: 50%;
+          transition: all 0.2s ease-in-out;
+          cursor: pointer;
+
+          .join-meeting-icon {
+            font-size: 35px;
+            margin-bottom: 5px;
+          }
+          .join-meeting-text {
+            font-size: 15px;
+            font-weight: 600;
+          }
+          &:hover {
+            background-color: lighten($secondary-color, 5%);
+          }
+        }
+      }
+
+      .app-meeting-main {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        .sidebar-participants {
+          opacity: 0;
+          width: 210px;
+          height: 60%;
+          position: absolute;
+          top: 150px;
+          right: 0px;
+          z-index: 150;
+          background-color: $secondary-color;
+          padding: 20px;
+          color: $text-color;
+          border-radius: 5px;
+          transition: all 0.2s;
+          overflow-y: auto;
+
+          /* width */
+          &::-webkit-scrollbar {
+            width: 10px;
+          }
+
+          /* Track */
+          &::-webkit-scrollbar-track {
+            background: lighten($primary-color, 2.5%);
+          }
+
+          /* Handle */
+          &::-webkit-scrollbar-thumb {
+            background: darken($secondary-color, 2.5%);
+          }
+
+          /* Handle on hover */
+          &::-webkit-scrollbar-thumb:hover {
+            background: lighten($secondary-color, 5%);
+          }
+
+          &.show {
+            opacity: 1;
+            right: 15px;
+          }
+
+          .sidebar-title {
+            font-weight: 300;
+            font-size: 20px;
+            border-bottom: 1px solid $placeholder-color;
+            margin-bottom: 10px;
+          }
+          .sidebar-member {
+            padding: 5px 10px;
+            background-color: lighten($secondary-color, 10%);
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            &:hover {
+              background-color: lighten($secondary-color, 15%);
+            }
+          }
+        }
+
+        .video-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          width: 100%;
+          .video-self {
+            width: 150px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+            border: 1px solid;
+            border-radius: 5px;
+          }
+          .video-remote {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border-radius: $border-radius;
+          }
+        }
+        .video-controls {
+          display: flex;
+          margin-top: 35px;
+          justify-content: center;
+          align-items: center;
+          .video-controls-btn {
+            background-color: $secondary-color;
+            margin: 0 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            color: $text-color;
+            cursor: pointer;
+            transition: background-color 0.2s;
+
+            &:hover {
+              background-color: lighten($secondary-color, 5%);
+            }
+
+            &.negative {
+              background-color: $red-color;
+
+              &:hover {
+                background-color: lighten($red-color, 5%);
+              }
+            }
+            &.selected {
+              background-color: $green-color;
+
+              &:hover {
+                background-color: lighten($green-color, 5%);
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

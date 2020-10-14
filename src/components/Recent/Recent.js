@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { debounce } from "lodash";
 
 import { updateStatus as updateWidgetStatus } from "../../features/widgetRecents/widgetRecentsSlice";
 import { StoreContext } from "../../features/webex/webexStore";
@@ -18,8 +19,13 @@ import "./Recent.scss";
 
 export const Recent = () => {
   const [webex] = useContext(StoreContext);
+
+  const windowRef = useRef(null);
+  const [initial, setInitial] = useState(true);
   // mode determine if it is search/spaces
-  const mode = useSelector(state => state.widgetRecents.status.mode);
+  const { isScrolledToTop, scrollTopValue, mode } = useSelector(
+    state => state.widgetRecents.status
+  );
   const dispatch = useDispatch();
 
   const spaces = useSelector(state => state.spaces.ids);
@@ -44,6 +50,51 @@ export const Recent = () => {
     currentUserId
   );
 
+  // handle initial
+  useEffect(() => {
+    const node = windowRef.current;
+    if (node && initial) {
+      setInitial(false);
+      if (scrollTopValue !== 0) {
+        node.scrollTo({ top: scrollTopValue });
+      }
+    }
+  }, [initial, scrollTopValue]);
+
+  // handle scroll
+  const handleScroll = () => {
+    const node = windowRef.current;
+    if (node) {
+      const { scrollTop } = node;
+
+      // load more activities if required
+      if (scrollTop < 100 && isScrolledToTop) {
+        node.scrollTo({ top: 0, behavior: "smooth" });
+        dispatch(
+          updateWidgetStatus({ isScrolledToTop: true, scrollTopValue: 0 })
+        );
+      } else if (scrollTop < 100 && !isScrolledToTop) {
+        dispatch(
+          updateWidgetStatus({
+            isScrolledToTop: true,
+            scrollTopValue: scrollTop
+          })
+        );
+      } else if (scrollTop > 100 && isScrolledToTop) {
+        dispatch(
+          updateWidgetStatus({
+            isScrolledToTop: false,
+            scrollTopValue: scrollTop
+          })
+        );
+      } else {
+        dispatch(updateWidgetStatus({ scrollTopValue: scrollTop }));
+      }
+    }
+  };
+
+  const deHandleScroll = debounce(handleScroll, 300);
+
   return (
     <div className="App-recent">
       <div className="recent-header">
@@ -60,7 +111,11 @@ export const Recent = () => {
       {mode === "spaces" && (
         <>
           <div className="recent-sort">Sort by: </div>
-          <div className="recent-content">
+          <div
+            className="recent-content"
+            ref={windowRef}
+            onScroll={deHandleScroll}
+          >
             {spaces.map(i => {
               return <RecentRow key={i} id={i} />;
             })}

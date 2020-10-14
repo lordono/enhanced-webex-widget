@@ -22,11 +22,11 @@
     <!-- icons -->
     <script
       type="module"
-      src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"
+      src="https://unpkg.com/ionicons@5.1.2/dist/ionicons/ionicons.esm.js"
     ></script>
     <script
       nomodule=""
-      src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js"
+      src="https://unpkg.com/ionicons@5.1.2/dist/ionicons/ionicons.js"
     ></script>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
@@ -41,33 +41,8 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div class="login-container">
-      <input
-        class="login-input"
-        id="login-input"
-        placeholder="Access Token"
-        value="YzI3MTM2NGYtMzRhZi00NTkyLTk0M2MtNWJjMDU4OGMxZWVhNThkYWJjZTAtMTEy_PF84_bcd427d5-a1ee-4b43-874a-d1fa58631729"
-      />
-      <div class="login-buttons">
-        <button class="login-button" onclick="loadWidget()">Load Widget</button>
-        <button class="login-button" onclick="unloadWidget()">
-          Unload Widget
-        </button>
-      </div>
-    </div>
-    <div id="root" name=""></div>
+    <div id="root"></div>
 
-    <script>
-      function loadWidget() {
-        document
-          .getElementById("root")
-          .setAttribute("token", document.getElementById("login-input").value);
-        document.getElementById("root").setAttribute("load", "true");
-      }
-      function unloadWidget() {
-        document.getElementById("root").setAttribute("load", "false");
-      }
-    </script>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

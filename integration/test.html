@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test with Widget</title>
+    <link rel="stylesheet" href="test.css" />
+  </head>
+  <body>
+    <script>
+      function loadWidget() {
+        const token = document.getElementById("login-input").value;
+        const url = `http://localhost:3000/?access_token=${token}`;
+        if (!document.getElementById("widget").src) {
+          document.getElementById("widget").src = url;
+        }
+        document.getElementById("widget-container").className =
+          "iframe-container";
+      }
+
+      function hideWidget() {
+        const widgetClass = document.getElementById("widget-container")
+          .className;
+        console.log(widgetClass);
+        if (widgetClass.includes("hide")) {
+          document.getElementById("widget-container").className =
+            "iframe-container";
+        } else {
+          document.getElementById("widget-container").className =
+            "iframe-container hide";
+        }
+      }
+    </script>
+    <div class="login-container">
+      <input
+        class="login-input"
+        id="login-input"
+        placeholder="Access Token"
+        value="YjRmMTMxN2YtMTU1ZS00NjU3LWE3YWQtOTA3N2JmMzRiZjFjNDM2OWEwYWEtMTNi_PF84_bcd427d5-a1ee-4b43-874a-d1fa58631729"
+      />
+      <button class="login-button" onclick="loadWidget()">Login</button>
+    </div>
+    <button class="widget-button" onclick="hideWidget()">W</button>
+    <div class="iframe-container hide" id="widget-container">
+      <iframe class="iframe" id="widget" />
+    </div>
+  </body>
+</html>

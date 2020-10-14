@@ -17,5 +17,6 @@ export const formatMsgTime = stringDate => {
   const targetDate = parseISO(stringDate);
   const formattedTime = format(targetDate, "h:mm a");
   const formattedDate = formatDate(stringDate);
-  return `${formattedDate} at ${formattedTime}`;
+  if (formattedDate === "Today") return `${formattedTime}`;
+  else return `${formattedDate} at ${formattedTime}`;
 };

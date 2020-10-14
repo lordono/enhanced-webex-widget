@@ -13,23 +13,19 @@ import reactionsReducer from "../features/reactions/reactionsSlice";
 import threadsReducer from "../features/threads/threadsSlice";
 import composeReducer from "../features/compose/composeSlice";
 import indicatorReducer from "../features/indicator/indicatorSlice";
+import huntingReducer from "../features/hunting/huntingSlice";
+import filterOrgReducer from "../features/filterOrg/filterOrgSlice";
+import widgetMeetingReducer from "../features/widgetMeeting/widgetMeetingSlice";
+import widgetBaseReducer from "../features/widgetBase/widgetBaseSlice";
 
 export default configureStore({
   middleware: getDefaultMiddleware({
-    serializableCheck: {
-      // Ignore these action types
-      ignoredActions: ["webex/storeWebex"],
-      // Ignore these field paths in all actions
-      ignoredActionPaths: ["payload.webex"],
-      // Ignore these paths in the state
-      ignoredPaths: ["webex"]
-    }
+    serializableCheck: false,
+    immutableCheck: false
   }),
   reducer: {
     errors: errorsReducer,
     mercury: mercuryReducer,
-    widgetRecents: widgetRecentsReducer,
-    widgetMessage: widgetMessageReducer,
     avatars: avatarsReducer,
     activities: activitiesReducer,
     reactions: reactionsReducer,
@@ -39,6 +35,12 @@ export default configureStore({
     features: featuresReducer,
     webex: webexReducer,
     compose: composeReducer,
-    indicator: indicatorReducer
+    indicator: indicatorReducer,
+    hunting: huntingReducer,
+    filterOrg: filterOrgReducer,
+    widgetBase: widgetBaseReducer,
+    widgetRecents: widgetRecentsReducer,
+    widgetMessage: widgetMessageReducer,
+    widgetMeeting: widgetMeetingReducer
   }
 });

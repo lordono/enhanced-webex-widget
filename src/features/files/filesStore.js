@@ -7,6 +7,7 @@ export const saveFileFromActivities = (webex, filesStore, activity) => {
   const { files, updateFile } = filesStore;
   // Store files - ["files", "content"] - omitting files in case the size is huge...
   if (
+    activity.object &&
     activity.object.objectType === "content" &&
     activity.object.contentCategory === "images"
   ) {

@@ -27,6 +27,13 @@ export const usersSlice = createSlice({
       usersAdapter.addOne(state, user);
       state.byEmail[user.email] = user.id;
     },
+    addMany: (state, action) => {
+      const { users } = action.payload;
+      usersAdapter.addMany(state, users);
+      users.forEach(user => {
+        state.byEmail[user.email] = user.id;
+      });
+    },
     editOne: (state, action) => {
       const { user } = action.payload;
       state.byEmail[user.email] = user.id;
@@ -63,6 +70,7 @@ export const usersSlice = createSlice({
 
 const {
   addOne,
+  addMany,
   // editOne,
   changeCurrent,
   fetchUserRequest,
@@ -78,10 +86,14 @@ export const storeUser = user => (dispatch, getState) => {
 
 export const storeUsers = users => (dispatch, getState) => {
   const state = getState();
+  let allUsers = [];
   users.forEach(user => {
-    const payload = { user: constructUser(user) };
-    if (!state.users.ids.includes(user.id)) dispatch(addOne(payload));
+    const payload = constructUser(user);
+    if (!state.users.ids.includes(user.id)) {
+      allUsers = allUsers.concat(payload);
+    }
   });
+  dispatch(addMany({ users: allUsers }));
   return Promise.resolve(users);
 };
 

@@ -1,3 +1,62 @@
+# Enhanced Webex Widget
+
+Enhanced Webex Widget is a Javascript project that aims to resolve some gripping issues with existing widget such as conversation caching and integrated video/messaging system.
+
+## Installation
+
+The widget is built and can be served using Express.js. To access this widget, you can use an iframe and point the source to the Express server.
+
+Below is a simple step-by-step guide on how to use this project.
+
+1. Use the package manager `yarn` to install the necessary packages (based on package.json)
+
+```bash
+yarn install
+```
+
+2. Add in necessary environment file `.env`. It should look like this. Use appropriate server url accordingly.
+
+```bash
+REACT_APP_SERVER_URL=http://localhost:5555/server
+```
+
+3. Build the widget into assets
+
+```bash
+yarn build
+```
+
+4. Add in files for mock-up server - `/mock/filter.json` and `/mock/hunting.json`.
+
+`filter.json` - a hash of user to organizations. This is to enforce which user has access to conversations that belong to specific organizations.
+```bash
+{
+  "webex_user1_id": [
+    "webex_org1_id",
+    "webex_org2_id"
+  ],
+  "webex_user2_id": [
+    "webex_org1_id"
+  ]
+}
+```
+
+`hunting.json` - an array that states which conversations belongs to the type - hunting line. This usage is specific for call-center functionality.
+```bash
+{ "spaces" : [ "webex_space1_id" ] }
+```
+
+5. Start the server
+
+```bash
+node server.js
+```
+
+6. Open widget through an iframe HTML - `/integration/test.html`
+
+
+## Note on Project
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
 
 ## Available Scripts

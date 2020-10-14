@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { SpaceBox } from "./SpaceBox";
 import { Loading } from "../Loading/Loading";
 
-import MeetingImg from "../../img/meeting.png";
+import MeetingImg from "../../img/room.gif";
 import LoadingImg from "../../img/loading.svg";
 
 import "./Space.scss";
@@ -21,7 +21,7 @@ export const Space = () => {
       )}
       {mode === "space" && !creatingSpace && !selectedSpace && (
         <div className="placeholder">
-          <img src={MeetingImg} alt="Meeting" />
+          <img src={MeetingImg} alt="Meeting" width={200} />
           <span>Please select a room to chat in.</span>
         </div>
       )}

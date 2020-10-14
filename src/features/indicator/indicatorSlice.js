@@ -52,7 +52,7 @@ export const storeIndicator = (conversationId, actorId) => (
         })
       );
     } else {
-      dispatch(addUserToIndicator(conversationId, actorId, date));
+      dispatch(addUserToIndicator({ conversationId, actorId, date }));
     }
   } else {
     const typing = [{ id: actorId, date }];

@@ -1,11 +1,11 @@
 @import "../../variables.scss";
 
 .App-recent {
-  height: calc(65vh - 40px);
-  width: 370px;
+  height: calc(100vh - 115px);
+  width: 345px;
   padding: 40px 0 0 25px;
-  border-top-left-radius: $border-radius;
-  border-bottom-left-radius: $border-radius;
+  // border-top-left-radius: $border-radius;
+  // border-bottom-left-radius: $border-radius;
   background-color: $primary-color;
   .recent-sort {
     color: lighten($placeholder-color, 15%);
@@ -135,6 +135,10 @@
       background-color: $primary-color;
       cursor: pointer;
 
+      &:first-of-type {
+        margin-top: 0;
+      }
+
       &.unread {
         .chat-row-info {
           color: $text-color;
@@ -197,10 +201,44 @@
             font-size: 0.65rem;
           }
         }
+        .chat-row-sub {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .chat-row-has-video {
+          width: 50px;
+          padding: 2.5px 5px;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          font-size: 16px;
+          color: $placeholder-color;
+          transition: color 0.2s;
+          &.has-video {
+            .video {
+              color: $green-color;
+            }
+          }
+          &.has-video.hunting {
+            .megaphone {
+              color: $red-color;
+            }
+          }
+          .megaphone {
+            margin-left: 5px;
+          }
+          .chat-row-has-video-text {
+            margin-right: 5px;
+            color: $placeholder-color;
+            font-size: 13.5px;
+            line-height: 1;
+          }
+        }
         .chat-row-description {
-          width: calc(100% - 1rem);
+          width: calc(100% - 65px);
           margin-top: 5px;
-          font-size: 0.8rem;
+          font-size: 0.75rem;
           white-space: nowrap;
           overflow: hidden;
           text-align: left;

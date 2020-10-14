@@ -5,6 +5,7 @@ import { isAfter, parseISO } from "date-fns";
 import { add as addError } from "../errors/errorsSlice";
 import { storeActivities } from "../activities/activitiesSlice";
 import { storeUsers } from "../users/usersSlice";
+import { updateStatus as updateWidgetStatus } from "../widgetRecents/widgetRecentsSlice";
 
 import { TAG_LOCKED, constructSpace, constructSpaces } from "./helpers";
 import { saveFileFromActivities } from "../files/filesStore";
@@ -113,14 +114,37 @@ export const removeSpaceTags = (spaceId, tags) => dispatch => {
 export const storeSpaces = (spaces, options = {}) => (dispatch, getState) => {
   const currentUserId = getState().users.currentUserId;
   const existingSpaceIds = getState().spaces.ids;
+  const filterOrg = getState().filterOrg.filter
   const updateList = [];
   const addList = [];
   constructSpaces(spaces, currentUserId).forEach(space => {
+    // filter out spaces that contain participants from non-access organizations
+    if (currentUserId in filterOrg) {
+      const organizations = filterOrg[currentUserId];
+      let access = true;
+      for (let participant of space.participants) {
+        if (!organizations.includes(participant.orgId)) {
+          access = false;
+        }
+      }
+      if (!access) {
+        return;
+      }
+    }
+
+    // format participants to only ids
     const formattedSpace = {
       ...space,
       participants: space.participants.map(i => i.id),
       ...options
     };
+    
+    // deduplicate activities
+    formattedSpace.activities = formattedSpace.activities.filter(
+      (item, index, self) => index === self.findIndex(t => t === item)
+    );
+
+    // push to update/add list
     if (existingSpaceIds.includes(space.id)) {
       updateList.push(formattedSpace);
     } else {
@@ -233,7 +257,9 @@ export const updateSpaceWithActivity = (
   // We update lastReadableActivityDate, and the activity attached to this Space
   const space = {
     id: activity.target.id,
-    activities: targetSpace.activities.concat(activity.id),
+    activities: targetSpace.activities
+      .concat(activity.id)
+      .filter((item, index, self) => index === self.findIndex(t => t === item)),
     latestActivity: activity.id,
     isLocked: activity.object.tags && activity.object.tags.includes(TAG_LOCKED)
   };
@@ -335,17 +361,35 @@ const fetchSpacesPaginateCall = (webexInstance, options = {}) => (
       const spaces = results.page.items;
       const links = results.page.links;
 
+      let allActivities = [];
+      let allUsers = [];
       spaces.forEach(space => {
-        dispatch(storeActivities(space.activities.items));
-        dispatch(storeUsers(space.participants.items));
+        allActivities = allActivities.concat(space.activities.items);
+        allUsers = allUsers.concat(space.participants.items);
       });
-      dispatch(
-        storeSpaces(spaces, {
-          isFetching: false,
-          isFetchingActivities: false,
-          hasFetchedActivities: false
-        })
-      );
+      dispatch(storeUsers(allUsers))
+        .then(() => dispatch(storeActivities(allActivities)))
+        .then(() =>
+          dispatch(
+            storeSpaces(spaces, {
+              isFetching: false,
+              isFetchingActivities: false,
+              hasFetchedActivities: false
+            })
+          )
+        )
+        .then(() => {
+          // this indicates that this is the first time and not a recursive call
+          if (!options.page) {
+            dispatch(
+              updateWidgetStatus({
+                isFetchingInitialSpaces: false,
+                hasFetchedInitialSpaces: true,
+                isFetchingAllSpaces: true
+              })
+            );
+          }
+        });
 
       const constructedSpaces = spaces.map(s =>
         constructSpace(s, currentUserId)

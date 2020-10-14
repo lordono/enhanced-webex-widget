@@ -22,37 +22,34 @@ export const mercurySlice = createSlice({
 
 const { updateStatusConnecting, updateStatusConnected } = mercurySlice.actions;
 
-export function connectToMercury(webex) {
-  return dispatch => {
-    if (webex) {
-      const { canAuthorize, internal } = webex;
-      const { device, mercury } = internal;
+export const connectToMercury = webex => dispatch => {
+  if (webex) {
+    const { canAuthorize, internal } = webex;
+    const { device, mercury } = internal;
 
-      if (
-        canAuthorize &&
-        device.registered &&
-        !mercury.connected &&
-        !mercury.connecting
-      ) {
-        dispatch(updateStatusConnecting(true));
+    if (
+      canAuthorize &&
+      device.registered &&
+      !mercury.connected &&
+      !mercury.connecting
+    ) {
+      dispatch(updateStatusConnecting(true));
 
-        return mercury
-          .connect()
-          .then(() =>
-            webex.listenToAndRun(mercury, "change:connected", () =>
-              dispatch(updateStatusConnected(mercury.connected))
-            )
-          );
-      }
-      // Handle if mercury is already connected from previous instance
-      if (mercury.connected) {
-        return dispatch(updateStatusConnected(mercury.connected));
-      }
+      return mercury.connect().then(() =>
+        webex.listenToAndRun(mercury, "change:connected", () => {
+          dispatch(updateStatusConnecting(false));
+          dispatch(updateStatusConnected(mercury.connected));
+        })
+      );
     }
+    // Handle if mercury is already connected from previous instance
+    if (mercury.connected) {
+      return dispatch(updateStatusConnected(mercury.connected));
+    }
+  }
 
-    return Promise.resolve();
-  };
-}
+  return Promise.resolve();
+};
 
 // Export the customized selectors for this adapter using `getSelectors`
 export const selectMercury = state => state.mercury;
