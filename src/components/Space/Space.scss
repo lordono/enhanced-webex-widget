@@ -1,7 +1,7 @@
 @import "../../variables.scss";
 
 .App-space {
-  min-height: calc(100vh - 75px);
+  height: calc(100vh - 75px);
   width: calc(100% - 345px);
   display: flex;
   flex-direction: column;

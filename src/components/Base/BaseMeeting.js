@@ -24,14 +24,20 @@ export const BaseMeeting = () => {
     state => state.spaces.entities[state.widgetMeeting.current.spaceId]
   );
   const { inMeeting, joiningMeeting, isMuted, isOnVideo } = widgetMeeting;
+  // check if space is a hunting line
+  // const huntingSpaces = useSelector(state => state.hunting.spaces);
+  // const isHunting = space ? huntingSpaces.includes(space.id) : false;
 
+  // references for video/audio html-markups
   const selfVideoRef = useRef(null);
   const remoteAudioRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
+  // states to hold video/audio streams
   const [selfView, setSelfView] = useState(null);
   const [remoteVideo, setRemoteVideo] = useState(null);
   const [remoteAudio, setRemoteAudio] = useState(null);
+  // states to hold members and sidebar trigger to show members
   const [members, setMembers] = useState([]);
   const [sidebar, setSidebar] = useState(null);
 
@@ -39,6 +45,7 @@ export const BaseMeeting = () => {
   const currentMeeting = meetingStore[currentUrl];
   const currentCreating = widgetMeeting.current.creating;
 
+  // control button classes 
   const onAudioBtn = clsx("video-controls-btn", isMuted && "negative");
   const onVideoBtn = clsx("video-controls-btn", !isOnVideo && "negative");
   const onPeopleBtn = clsx(
@@ -46,6 +53,7 @@ export const BaseMeeting = () => {
     sidebar === "people" && "selected"
   );
 
+  // container classes
   const containerClass = clsx(
     "app-content-meeting",
     mode === "meeting" && "show"
@@ -54,7 +62,7 @@ export const BaseMeeting = () => {
     "sidebar-participants",
     sidebar === "people" && "show"
   );
-
+  // format space name
   const spaceName = space
     ? `${space.isOneOnOne ? "1 on 1: " : ""}${space.displayName}`
     : "";
@@ -86,7 +94,6 @@ export const BaseMeeting = () => {
       // We are not concerned with them in this demo
       if (memberObject.isUser) memberList.push(memberObject);
     });
-    console.log(memberList);
     setMembers(memberList);
   };
 
@@ -151,35 +158,42 @@ export const BaseMeeting = () => {
     });
   };
 
+  // effects to send any incoming streams to html references
   useEffect(() => {
     if (selfVideoRef.current) selfVideoRef.current.srcObject = selfView;
   }, [selfView]);
   useEffect(() => {
+    console.log('remoteVideo', remoteVideo, remoteVideoRef.current);
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = remoteVideo;
   }, [remoteVideo]);
   useEffect(() => {
     if (remoteAudioRef.current) remoteAudioRef.current.srcObject = remoteAudio;
   }, [remoteAudio]);
 
+  // render view
   if (!widgetMeeting.current.spaceId) {
+    // no meeting selected
     return (
       <div className={containerClass}>
         <Loading img={LoadingSvg} text="No Space selected" />
       </div>
     );
   } else if (joiningMeeting) {
+    // loading screen for joining meeting
     return (
       <div className={containerClass}>
         <Loading img={LoadingSvg} text="Joining the meeting..." />
       </div>
     );
   } else if (currentCreating) {
+    // loading screen for starting meeting
     return (
       <div className={containerClass}>
         <Loading img={LoadingSvg} text="Starting the meeting..." />
       </div>
     );
   } else if (!inMeeting && currentMeeting) {
+    // startup screen for user to join meeting
     return (
       <div className={containerClass}>
         <div className="join-meeting-container">
@@ -198,6 +212,7 @@ export const BaseMeeting = () => {
       </div>
     );
   } else if (!inMeeting && !currentMeeting) {
+    // startup screen for user to start meeting
     return (
       <div className={containerClass}>
         <div className="join-meeting-container">
@@ -219,6 +234,7 @@ export const BaseMeeting = () => {
       </div>
     );
   } else {
+    // video-call default screen
     return (
       <div className={containerClass}>
         <div className="app-meeting-main">
@@ -303,6 +319,16 @@ export const BaseMeeting = () => {
                   unBindMeetingEvents(currentMeeting.meeting);
                   dispatch(resetWidgetMeeting());
                 });
+                // if (isHunting) {
+                //   webex.meetings.destroy(currentMeeting.meeting, 'FULLSTATE_REMOVED');
+                //   unBindMeetingEvents(currentMeeting.meeting);
+                //   dispatch(resetWidgetMeeting());
+                // } else {
+                //   currentMeeting.meeting.leave().then(() => {
+                //     unBindMeetingEvents(currentMeeting.meeting);
+                //     dispatch(resetWidgetMeeting());
+                //   });
+                // }
               }}
             >
               <ion-icon class="video-btn-icon" name="exit" />
