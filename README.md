@@ -2,6 +2,48 @@
 
 Enhanced Webex Widget is a Javascript project that aims to resolve some gripping issues with existing widget such as conversation caching and integrated video/messaging system.
 
+## Introduction
+
+### Base Folder Structure
+
+| Folder       | Description                                                                                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| /build       | static files generated when you run `yarn build`. You should aim to host this either using ExpressJS or Nginx or other platform |
+| /integration | sample integration to iframe this application on your application                                                               |
+| /mock        | mock application to host grouping/hunting (note: this feature is not production-level but an example)                           |
+| /public      | static files for the application                                                                                                |
+| /src         | main application                                                                                                                |
+| .env         | environment variables used in application                                                                                       |
+| package.json | packages used to develop this application                                                                                       |
+| server.js    | example ExpressJS file to host both mock application and main application (after running `yarn build`)                          |
+
+### App Folder Structure
+
+You can find these folders in `/src`
+
+| Folder      | Description                                                        |
+| ----------- | ------------------------------------------------------------------ |
+| /app        | redux store                                                        |
+| /components | ui components used in application                                  |
+| /features   | redux/react context features such as messaging/users/meeting logic |
+| /img        | image assets used such as loading/placeholder-images               |
+| /utils      | utility/helper functions used throughout the application           |
+| index.js    | entry function to application                                      |
+
+### Internal vs Public API
+
+| Features                 | Public API | Internal API                  | On-Prem  |
+| ------------------------ | ---------- | ----------------------------- | -------- |
+| Basic Messaging          |            | - conversation - mercury (mq) |          |
+| Threads                  |            | - conversation - mercury (mq) |          |
+| Reactions                |            | - mercury (mq)                |          |
+| Indicators (read/unread) |            | - device - mercury (mq)       |          |
+| File Download/Upload     |            | - conversation                |          |
+| Users                    |            | - user - device               |          |
+| Avatars                  |            | - conversation                |          |
+| Meeting                  | - meeting  |                               |          |
+| Grouping/Hunting         |            |                               | - server |
+
 ## Installation
 
 The widget is built and can be served using Express.js. To access this widget, you can use an iframe and point the source to the Express server.
@@ -29,6 +71,7 @@ yarn build
 4. Add in files for mock-up server - `/mock/filter.json` and `/mock/hunting.json`.
 
 `filter.json` - a hash of user to organizations. This is to enforce which user has access to conversations that belong to specific organizations.
+
 ```bash
 {
   "webex_user1_id": [
@@ -42,6 +85,7 @@ yarn build
 ```
 
 `hunting.json` - an array that states which conversations belongs to the type - hunting line. This usage is specific for call-center functionality.
+
 ```bash
 { "spaces" : [ "webex_space1_id" ] }
 ```
@@ -53,7 +97,6 @@ node server.js
 ```
 
 6. Open widget through an iframe HTML - `/integration/test.html`
-
 
 ## Note on Project
 
